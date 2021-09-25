@@ -27,7 +27,7 @@ import qualified Data.List as List
 import Data.Maybe
 import Prelude hiding (drop,take,span)
 
-import qualified Data.Origami as O
+import qualified Origami.Fold as O
 
 -- | Generically transfrrom the nodes of a `[View]` with access to the offset
 -- of the node and the length of the content within it while passing an arbitrary
