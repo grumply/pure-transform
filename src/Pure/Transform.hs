@@ -1,12 +1,16 @@
 {-# language RecursiveDo, NamedFieldPuns, ViewPatterns, OverloadedStrings #-}
-module Pure.Data.View.Transform 
+module Pure.Transform 
   ( transform
   , over
   , contains
   , content, contentInRange
-  , find
   , tags, tagsInRange, tagsAround
+  , replaceTagWith
   , split
+  , drop, take
+  , cut, span
+  , find
+  , walkr
   , foldo, foldoM
   , foldll, foldlr, foldrl, foldrr
   , foldllM, foldlrM, foldrlM, foldrrM
@@ -21,7 +25,7 @@ import Pure.Data.View.Patterns
 import Control.Monad.Fix
 import qualified Data.List as List
 import Data.Maybe
-import Prelude hiding (span)
+import Prelude hiding (drop,take,span)
 
 import qualified Data.Origami as O
 
@@ -111,6 +115,16 @@ rightmostTags = List.nub . go
         rest [c] = go c
         rest (_ : xs) = rest xs
     go _ = []
+
+replaceTagWith :: Txt -> View -> View -> View
+replaceTagWith t r = go
+  where
+    go (Children cs HTMLView  { tag }) | t == tag = r <||> fmap go cs
+    go (Children cs KHTMLView { tag }) | t == tag = r <||> fmap go cs
+    go (Children cs SVGView   { tag }) | t == tag = r <||> fmap go cs
+    go (Children cs KSVGView  { tag }) | t == tag = r <||> fmap go cs
+    go (Children cs v) = v <||> fmap go cs
+    go v = v
 
 split :: Int -> View -> (View,View)
 split start v0 = (before,after)
